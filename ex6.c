@@ -1,3 +1,9 @@
+/****************************
+ * Name: Thomas Kowalski
+ * ID: *********
+ * Assignment: Ex6
+****************************/
+
 #include "ex6.h"
 #include <ctype.h>
 #include <stdio.h>
@@ -349,3 +355,47 @@ int main()
     freeAllOwners();
     return 0;
 }
+
+
+
+void openPokedexMenu(void) {
+    char* name[21];
+    printf("Your name: ");
+    scanf("%s", &name); // maybe need \n !!!!!!!!!!!!!!!!!!
+    // check for duplicates
+
+    // if not ok
+    printf("Owner '%s' already exists. Not creating a new Pokedex.\n", name);
+    return;
+    // if ok
+    printf("Choose starter:\n1. %s\n2. %s\n3. %s\n", pokedex[STARTER1].name,
+    pokedex[STARTER2].name, pokedex[STARTER3].name);
+    int starterChoice = readIntSafe("Your choice: ");
+    switch (starterChoice)
+    {
+    case 1:
+        starterChoice = STARTER1;
+        break;
+    
+    case 2:
+        starterChoice = STARTER2;
+        break;
+    
+    case 3:
+        starterChoice = STARTER3;
+        break;
+
+    default:
+        printf("Invalid choice.\n");
+        return;
+        break;
+    } 
+
+    // create pokedex
+
+    // when done
+    printf("New Pokedex created for %s with starter %s.\n", name, pokedex[starterChoice].name);
+    return;
+}
+
+// need to figure out how to add a pokedex...

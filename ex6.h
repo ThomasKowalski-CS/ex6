@@ -1,6 +1,10 @@
 #ifndef EX6_H
 #define EX6_H
 
+#define STARTER1 1
+#define STARTER2 4
+#define STARTER3 7
+
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
