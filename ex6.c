@@ -392,10 +392,30 @@ void openPokedexMenu(void) {
     } 
 
     // create pokedex
+    if (ownerHead == NULL) { // if list is empty
+        ownerHead = malloc(sizeof(OwnerNode));
+        if (!ownerHead) {
+            printf("malloc failed\n");
+            exit(1);
+        }
+        ownerHead->next = ownerHead;
+        ownerHead->prev = ownerHead;
+    }
+    else {
+        // make owner node at end
+        OwnerNode *tmp = malloc(sizeof(OwnerNode));
+        if (!tmp) {
+            printf("malloc failed\n");
+            exit(1);
+        }
+        ownerHead->prev->next = tmp;
+        // not good need to set prev before?
 
+    }
+        OwnerNode *newOwner = ownerHead->prev;
+        newOwner->ownerName = name;
+        newOwner->pokedexRoot = malloc(sizeof(PokemonNode));
     // when done
     printf("New Pokedex created for %s with starter %s.\n", name, pokedex[starterChoice].name);
     return;
 }
-
-// need to figure out how to add a pokedex...
