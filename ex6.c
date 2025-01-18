@@ -252,6 +252,152 @@ void displayMenu(OwnerNode *owner)
     }
 }
 
+// BFS display
+void displayBFS(PokemonNode *root) {
+    BFSGeneric(root, printPokemonNode);
+}
+
+void BFSGeneric(PokemonNode *root, VisitNodeFunc visit) {
+    Queue queue;
+    queue.front = malloc(sizeof(QueueNode));
+    if (!queue.front) {
+        printf("malloc failed\n");
+        exit(1);
+    }
+    queue.rear = queue.front;
+    queue.front->next = NULL;
+    queue.front->pokemonNode = root;
+    
+    QueueNode *cur = queue.front;
+
+    while (cur != NULL) {
+    visit(cur->pokemonNode->data);
+    if (cur->pokemonNode->left) {
+        addChildToQueue(&queue, cur->pokemonNode->left);
+    }
+    if (cur->pokemonNode->right) {
+        addChildToQueue(&queue, cur->pokemonNode->right);
+    }
+    cur = queue.front->next;
+    free(queue.front);
+    queue.front = cur;
+    }
+}
+
+// DFS PreOrder display
+void preOrderTraversal(PokemonNode *root) {
+    preOrderGeneric(root, printPokemonNode);
+}
+
+void preOrderGeneric(PokemonNode *root, VisitNodeFunc visit) {
+    if (!root) {
+        return;
+    }
+    visit(root->data);
+    preOrderGeneric(root->left, visit);
+    preOrderGeneric(root->right, visit);
+}
+
+// DFS InOrder display
+void inOrderTraversal(PokemonNode *root) {
+    inOrderGeneric(root, printPokemonNode);
+}
+
+void inOrderGeneric(PokemonNode *root, VisitNodeFunc visit) {
+    if (!root) {
+        return;
+    }
+    preOrderGeneric(root->left, visit);
+    visit(root->data);
+    preOrderGeneric(root->right, visit);
+}
+
+// DFS PostOrder display
+void postOrderTraversal(PokemonNode *root) {
+    postOrderGeneric(root, printPokemonNode);
+}
+
+void postOrderGeneric(PokemonNode *root, VisitNodeFunc visit) {
+    if (!root) {
+        return;
+    }
+    preOrderGeneric(root->left, visit);
+    preOrderGeneric(root->right, visit);
+    visit(root->data);
+}
+
+// Alphabetic display
+void displayAlphabetical(PokemonNode *root) {
+    // check bst length
+    int BSTSize = checkBSTLength(root);
+
+    // create and initialize the node array
+    NodeArray arr;
+    arr.size = 0;
+    arr.capacity = BSTSize;
+    initNodeArray(&arr, arr.capacity);
+    // add all the nodes to the array
+    collectAll(root, &arr);
+    // sort the array
+    bubbleSortArr(&arr);
+    // print the array and free it
+    for (int i = 0; i < arr.size; i++) {
+        printPokemonNode(arr.nodes[i]);
+        free(arr.nodes[i]);
+    }
+}
+
+int checkBSTLength(PokemonNode *root) {
+    if (!root) {
+        return 0;
+    }
+    return 1 + checkBSTLength(root->left) + checkBSTLength(root->right);
+}
+
+void initNodeArray(NodeArray *na, int cap) {
+    na->nodes = (PokemonNode**) malloc(sizeof(PokemonNode*) * cap);
+}
+
+void addNode(NodeArray *na, PokemonNode *node) {
+    if (na->capacity == na->capacity) {
+        na->capacity++;
+        na->nodes = realloc(na->nodes, sizeof(PokemonNode*) * na->capacity);
+        if(!na->nodes) {
+            printf("realloc failed\n");
+            exit(1);
+        }
+    }
+    na->nodes[na->size] = node;
+    na->size++;
+}
+
+void collectAll(PokemonNode *root, NodeArray *na) {
+    if (!root) {
+        return;
+    }
+    addNode(na, root);
+    collectAll(root->left, na);
+    collectAll(root->right, na);
+}
+
+void bubbleSortArr(NodeArray *na) {
+    int endIndex = na->capacity-1;
+    PokemonNode *tmp;
+    while (endIndex > 0) {
+        for(int i = 0; i < endIndex; i++) {
+            if (strcmp(na->nodes[i]->data->name, na->nodes[i+1]->data->name) > 0) {
+                // swap
+                tmp = na->nodes[i];
+                na->nodes[i] = na->nodes[i+1];
+                na->nodes[i+1] = tmp;
+            }
+        }
+        endIndex--;
+    }
+    tmp = NULL;
+
+}
+
 // --------------------------------------------------------------
 // Sub-menu for existing Pokedex
 // --------------------------------------------------------------
@@ -324,7 +470,8 @@ void addPokemon(OwnerNode *owner) {
     }
 
     // add pokemon
-    
+    insertPokemonNode(owner->pokedexRoot, newPokemonId);
+
     // when done
     printf("Pokemon %s (ID %d) added.\n", pokedex[newPokemonId].name, newPokemonId);
     return;
@@ -349,17 +496,8 @@ PokemonNode *searchPokemonBFS(PokemonNode *root, int id) {
 
     while (queue.front != NULL) {
     // work queue
-    PokemonNode *currentPokeNode = queue.front;
-    //add children to queue
-    if (currentPokeNode->left) {
-        addChildToQueue(&queue, currentPokeNode->left);
-    }
-
-    if (currentPokeNode->right) {
-        addChildToQueue(&queue, currentPokeNode->right);
-    }
-
-    if (currentPokeNode->data->id == id) {
+    QueueNode *currentQueueNode = queue.front;
+    if (currentQueueNode->pokemonNode->data->id == id) {
         // clear queue
         while (queue.front != NULL) {
             QueueNode *tmp = queue.front->next;
@@ -367,8 +505,17 @@ PokemonNode *searchPokemonBFS(PokemonNode *root, int id) {
             queue.front = tmp; 
             tmp = NULL;
         }
-        return currentPokeNode;
+        return currentQueueNode->pokemonNode;
     } 
+    // else add children to queue
+    if (currentQueueNode->pokemonNode->left) {
+        addChildToQueue(&queue, currentQueueNode->pokemonNode->left);
+    }
+
+    if (currentQueueNode->pokemonNode->right) {
+        addChildToQueue(&queue, currentQueueNode->pokemonNode->right);
+    }
+
     // next one in queue
     QueueNode *tmp = queue.front->next;
     free(queue.front);
@@ -377,7 +524,6 @@ PokemonNode *searchPokemonBFS(PokemonNode *root, int id) {
 
     }
     return NULL;
-
 }
 
 void addChildToQueue(Queue* queue, PokemonNode *child) {
@@ -394,7 +540,45 @@ void addChildToQueue(Queue* queue, PokemonNode *child) {
     newQueueNode = NULL;
 }
 
-
+void insertPokemonNode(PokemonNode *root, int id) {
+    PokemonNode *cycler = root;
+    while (1) {
+        if (cycler->data->id < id) {
+            // try right
+            if (cycler->right) {
+                cycler = cycler->right;
+                continue;
+            } 
+            // if cant add child there
+            cycler->right = malloc(sizeof(PokemonNode));
+            if (!cycler->right) {
+                printf("malloc failed\n");
+                exit(1);
+            }
+            cycler->left = NULL;
+            cycler->right = NULL;
+            dupPokemonDate(id, cycler->right->data);
+            return;
+        }
+        else {
+            // try left
+            if (cycler->left) {
+                cycler = cycler->left;
+                continue;
+            } 
+            // if cant add child there
+            cycler->left = malloc(sizeof(PokemonNode));
+            if (!cycler->left) {
+                printf("malloc failed\n");
+                exit(1);
+            }
+            cycler->left = NULL;
+            cycler->right = NULL;
+            dupPokemonDate(id, cycler->left->data);
+            return;
+        }
+    }
+}
 // --------------------------------------------------------------
 // Main Menu
 // --------------------------------------------------------------
@@ -452,11 +636,11 @@ int main()
 
 
 void openPokedexMenu(void) {
-    char* name[21];
+    char name[MAX_NAME];
     printf("Your name: ");
     scanf("%s", &name); // maybe need \n !!!!!!!!!!!!!!!!!!
     // check for duplicates
-    if (!ownerHead && isNameTaken(&name)) { // list isn't empty and name is taken
+    if (!ownerHead && isNameTaken(name)) { // list isn't empty and name is taken
         printf("Owner '%s' already exists. Not creating a new Pokedex.\n", name);
         return;
     }
@@ -507,7 +691,11 @@ void openPokedexMenu(void) {
     }
 
     OwnerNode *newOwner = ownerHead->prev;
-    newOwner->ownerName = name;
+    newOwner->ownerName = strdup(name);
+    if (!newOwner->ownerName) {
+        printf("strdup malloc failed\n");
+        exit(1);
+    }
     
     // create the root pokemon node
     newOwner->pokedexRoot = (PokemonNode*) malloc(sizeof(PokemonNode));

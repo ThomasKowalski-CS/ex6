@@ -4,6 +4,7 @@
 #define STARTER1 1
 #define STARTER2 4
 #define STARTER3 7
+#define MAX_NAME 21
 
 #include <ctype.h>
 #include <stdio.h>
@@ -167,13 +168,13 @@ void freeOwnerNode(OwnerNode *owner);
    ------------------------------------------------------------ */
 
 /**
- * @brief Insert a PokemonNode into BST by ID; duplicates freed.
+ * @brief Insert a PokemonNode into BST by ID. Use searchPokemonBFS first.
  * @param root pointer to BST root
- * @param newNode node to insert
- * @return updated BST root
+ * @param id pokemon's id
+ * 
  * Why we made it: Standard BST insertion ignoring duplicates.
  */
-PokemonNode *insertPokemonNode(PokemonNode *root, PokemonNode *newNode);
+void insertPokemonNode(PokemonNode *root, int id);
 
 /**
  * @brief BFS search for a Pokemon by ID in the BST.
@@ -254,7 +255,7 @@ void printPokemonNode(PokemonNode *node);
    5) Display Methods (BFS, Pre, In, Post, Alphabetical)
    ------------------------------------------------------------ */
 
-typedef struct
+typedef struct NodeArray
 {
     PokemonNode **nodes;
     int size;
@@ -655,6 +656,13 @@ int isNameTaken(char *name);
  * @param child pointer to the data
  */
 void addChildToQueue(Queue* queue, PokemonNode *child);
+
+/**
+ * @brief counts the amount of nodes in a tree.
+ * @param root the root of the BST
+ * @return the number of Nodes
+ */
+int checkBSTLength(PokemonNode *root);
 
 
 
