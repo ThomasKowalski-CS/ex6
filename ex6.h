@@ -55,13 +55,25 @@ typedef struct PokemonNode
 } PokemonNode;
 
 // Linked List Node (for Owners)
-typedef struct OwnerNode
-{
+typedef struct OwnerNode {
     char *ownerName;          // Owner's name
     PokemonNode *pokedexRoot; // Pointer to the root of the owner's Pokédex
     struct OwnerNode *next;   // Next owner in the linked list
     struct OwnerNode *prev;   // Previous owner in the linked list
 } OwnerNode;
+
+// Queue Node (for BFS)
+typedef struct QueueNode {
+   PokemonNode *pokemonNode;
+   struct QueueNode *next;
+} QueueNode;
+
+// Queue Struct
+typedef struct Queue {
+   QueueNode *front;
+   QueueNode *rear;
+} Queue;
+
 
 // Global head pointer for the linked list of owners
 OwnerNode *ownerHead = NULL;
@@ -615,5 +627,35 @@ static const PokemonData pokedex[] = {
     {149, "Dragonite", DRAGON, 91, 134, CANNOT_EVOLVE},
     {150, "Mewtwo", PSYCHIC, 106, 110, CANNOT_EVOLVE},
     {151, "Mew", PSYCHIC, 100, 100, CANNOT_EVOLVE}};
+
+
+
+
+   /* ------------------------------------------------------------
+   14) Custom Functions
+   ------------------------------------------------------------ */
+   
+/**
+ * @brief copy all of a pokemon's data by id
+ * @param pokemonId the ID of the pokemon to be copied
+ * @param target pointer to the targeted PokemonDate node  
+ */
+void dupPokemonDate(int pokemonId, PokemonData *target);
+
+/**
+ * @brief checks if a name is already in use.
+ * @param name pointer to a name string
+ * @return 1 if an owner with this name exists, 0 if not.
+ */
+int isNameTaken(char *name);
+
+/**
+ * @brief adds a node to the end of the queue.
+ * @param queue pointer to the queue
+ * @param child pointer to the data
+ */
+void addChildToQueue(Queue* queue, PokemonNode *child);
+
+
 
 #endif // EX6_H
