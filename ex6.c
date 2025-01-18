@@ -461,6 +461,7 @@ void enterExistingPokedexMenu()
     } while (subChoice != 6);
 }
 
+// add pokemon
 void addPokemon(OwnerNode *owner) {
     int newPokemonId = readIntSafe("Enter ID to add: ");
     // check if id already in tree
@@ -555,8 +556,9 @@ void insertPokemonNode(PokemonNode *root, int id) {
                 printf("malloc failed\n");
                 exit(1);
             }
-            cycler->left = NULL;
-            cycler->right = NULL;
+            cycler->right->left = NULL;
+            cycler->right->right = NULL;
+            cycler->right->parent = cycler;
             dupPokemonDate(id, cycler->right->data);
             return;
         }
@@ -572,13 +574,67 @@ void insertPokemonNode(PokemonNode *root, int id) {
                 printf("malloc failed\n");
                 exit(1);
             }
-            cycler->left = NULL;
-            cycler->right = NULL;
+            cycler->left->left = NULL;
+            cycler->left->right = NULL;
+            cycler->left->parent = cycler;
             dupPokemonDate(id, cycler->left->data);
             return;
         }
     }
 }
+
+// free pokemon
+void freePokemon(OwnerNode *owner) {
+    if (!owner->pokedexRoot) {
+        printf("No Pokemon to release.\n");
+        return;
+    }
+
+    int chosenPokemonId = readIntSafe("Enter Pokemon ID to release: ");
+    // find it
+    PokemonNode *target = searchPokemonBFS(owner->pokedexRoot, chosenPokemonId);
+    if (!target) { // if not exist
+        printf("No Pokemon with ID %d found.\n", chosenPokemonId);
+        return;
+    }
+    // else 
+    // if no children just delete self and point to NULL
+    if (target->left == NULL && target->right == NULL) {
+        free(target->data->name);
+        free(target->data);
+        if (target->parent) { // if it's not the root
+            if( target->parent->left == target) { 
+                target->parent->left = NULL;
+            }
+            else {
+                target->parent->right = NULL;
+            }
+        }
+        free(target);
+        target = NULL;
+        return;
+    }
+    else if (target->left != NULL && target->right != NULL) {
+
+    }
+
+    // if 2 children 
+    // find the closest bigger ID (one right than all left until NULL)
+    PokemonNode *replacment = findClosestId(target->right);
+    // it will have no children or a child to the right (because if left then we wouldve went to it)
+    // replace it with the deleted node (and free the deleted one)
+    // point to it's child
+    
+    // if one child delete self and point to child
+}
+
+PokemonNode* findClosestId(PokemonNode *start) {
+    if (start->left == NULL) {
+        return start;
+    }
+    return findClosestId(start->left);
+}
+
 // --------------------------------------------------------------
 // Main Menu
 // --------------------------------------------------------------
@@ -705,6 +761,7 @@ void openPokedexMenu(void) {
     }
     newOwner->pokedexRoot->left = NULL;
     newOwner->pokedexRoot->right = NULL;
+    newOwner->pokedexRoot->parent = NULL;
 
     // create the root's data node
     newOwner->pokedexRoot->data = (PokemonData*) malloc(sizeof(PokemonData));

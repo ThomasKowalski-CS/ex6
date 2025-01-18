@@ -51,6 +51,7 @@ typedef struct PokemonData
 typedef struct PokemonNode
 {
     PokemonData *data;
+    struct PokemonNode *parent;
     struct PokemonNode *left;
     struct PokemonNode *right;
 } PokemonNode;
@@ -664,6 +665,11 @@ void addChildToQueue(Queue* queue, PokemonNode *child);
  */
 int checkBSTLength(PokemonNode *root);
 
-
+/**
+ * @brief finds the closest (bigger) ID.
+ * @param start where to start searching from? (usually the right child)
+ * @return pointer to the matching PokemonNode
+ */
+PokemonNode* findClosestId(PokemonNode *start);
 
 #endif // EX6_H
