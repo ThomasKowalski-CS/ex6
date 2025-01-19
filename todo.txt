@@ -89,4 +89,49 @@ free the targeted owner node:
 		owner name - in my case it's an array so no need
 		owner node
 		
+
+merge pokedexes:
+	check that there are more than one pokedex
+	get inputs...
+	BFS call addpokemon function to the first's pokedex
+	delete the second owner
+	
+sort owners:
+	check num of owners
+	if 0 print "0 or 1 owners only => no need to sort"
+	if 1 print "Owners sorted by name." and exit
+	if more than 1
+	
+	buuble sort owners linked list
+		count how many owners
+		bubble sort :)
+	
+
+print owner circular:
+		get dir and amount
+		print Ownerhead
+		while amount > 0
+		if dir F cycle forward and print
+		else the other way around
+		amount--
 		
+free all:
+	if pokedex empty exit
+	else delete all pokedexes
+	
+	
+	
+
+
+BUGS:
+1. when creating a pokedex and being asked for starter pokemon it says "Invalid input"
+2. can't add new pokemon - all already in the pokedex
+3. buuble sort arr capacity bug
+4. can't add pokemon - didn't NULL the cycle->left->data
+5. relese pokemon - seg fault
+6. evolve didn't print anything and crash
+6.1 line 56 seg fault
+6.2 after evolving seg fault when trying to display
+
+
+
