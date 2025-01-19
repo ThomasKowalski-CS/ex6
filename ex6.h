@@ -672,4 +672,5 @@ int checkBSTLength(PokemonNode *root);
  */
 PokemonNode* findClosestId(PokemonNode *start);
 
+
 #endif // EX6_H
