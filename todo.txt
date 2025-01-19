@@ -50,3 +50,43 @@ one child:
 
 two children:
 1. find replacment, swith pokemondata and apply one child or no children on it
+
+
+pokemon fight:
+check root exists
+if not exit
+else
+get 2 id from user
+calc power1, power2
+print accordingly
+
+
+evolve pokemon:
+check if pokedex is empty!!
+get id
+check if in pokedex - if not exit
+else 
+check if can evolve
+if cant exit
+else
+check if id+1 (evolved ver) exists
+if yes just delete self
+else 
+change the data to the new pokemon - tmp data the new one. free old data point to new data
+
+
+free pokedex:
+check if there are any pokedexes - if not exit
+print the owner list and get an index
+check if pokedex is the only one - if so point head to NULL
+else point prev and next to eachother
+free the targeted owner node:
+	free the tree:
+		data->name
+		data
+		pokemon node
+	free the owner:
+		owner name - in my case it's an array so no need
+		owner node
+		
+		

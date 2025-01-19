@@ -211,7 +211,7 @@ void printPokemonNode(PokemonNode *node)
 }
 
 // --------------------------------------------------------------
-// Display Menu
+// case 2: Display Menu
 // --------------------------------------------------------------
 void displayMenu(OwnerNode *owner)
 {
@@ -271,7 +271,7 @@ void BFSGeneric(PokemonNode *root, VisitNodeFunc visit) {
     QueueNode *cur = queue.front;
 
     while (cur != NULL) {
-    visit(cur->pokemonNode->data);
+    visit(cur->pokemonNode);
     if (cur->pokemonNode->left) {
         addChildToQueue(&queue, cur->pokemonNode->left);
     }
@@ -293,7 +293,7 @@ void preOrderGeneric(PokemonNode *root, VisitNodeFunc visit) {
     if (!root) {
         return;
     }
-    visit(root->data);
+    visit(root);
     preOrderGeneric(root->left, visit);
     preOrderGeneric(root->right, visit);
 }
@@ -308,7 +308,7 @@ void inOrderGeneric(PokemonNode *root, VisitNodeFunc visit) {
         return;
     }
     preOrderGeneric(root->left, visit);
-    visit(root->data);
+    visit(root);
     preOrderGeneric(root->right, visit);
 }
 
@@ -323,7 +323,7 @@ void postOrderGeneric(PokemonNode *root, VisitNodeFunc visit) {
     }
     preOrderGeneric(root->left, visit);
     preOrderGeneric(root->right, visit);
-    visit(root->data);
+    visit(root);
 }
 
 // Alphabetic display
@@ -444,7 +444,7 @@ void enterExistingPokedexMenu()
             displayMenu(cur);
             break;
         case 3:
-            freePokemon(cur);
+            freePokemon(cur, 0);
             break;
         case 4:
             pokemonFight(cur);
@@ -461,11 +461,28 @@ void enterExistingPokedexMenu()
     } while (subChoice != 6);
 }
 
-// add pokemon
+// ---------------------------- 
+// case 1: Add Pokemon
+// ----------------------------
 void addPokemon(OwnerNode *owner) {
     int newPokemonId = readIntSafe("Enter ID to add: ");
+    // check if tree exists (and create the root if not)
+    if (!owner->pokedexRoot) {
+        owner->pokedexRoot = (PokemonNode*) malloc(sizeof(PokemonNode));
+        if (!owner->pokedexRoot) {
+            printf("malloc failed\n");
+            exit(1);
+        }
+        owner->pokedexRoot->data = NULL;
+        owner->pokedexRoot->left = NULL;
+        owner->pokedexRoot->right = NULL;
+        owner->pokedexRoot->parent = NULL;
+    }
+    
+    
     // check if id already in tree
-    if (searchPokemonBFS(owner->pokedexRoot, newPokemonId) != NULL) {
+
+    if (owner->pokedexRoot->data != NULL && searchPokemonBFS(owner->pokedexRoot, newPokemonId) != NULL) {
         printf("Pokemon with ID %d is already in the Pokedex. No changes made.\n", newPokemonId);
         return;
     }
@@ -543,6 +560,11 @@ void addChildToQueue(Queue* queue, PokemonNode *child) {
 
 void insertPokemonNode(PokemonNode *root, int id) {
     PokemonNode *cycler = root;
+    if (root->data == NULL) { //handles an empty tree
+        dupPokemonData(id, root);
+        return;
+    }
+
     while (1) {
         if (cycler->data->id < id) {
             // try right
@@ -550,7 +572,7 @@ void insertPokemonNode(PokemonNode *root, int id) {
                 cycler = cycler->right;
                 continue;
             } 
-            // if cant add child there
+            // if cant, add child there
             cycler->right = malloc(sizeof(PokemonNode));
             if (!cycler->right) {
                 printf("malloc failed\n");
@@ -559,7 +581,7 @@ void insertPokemonNode(PokemonNode *root, int id) {
             cycler->right->left = NULL;
             cycler->right->right = NULL;
             cycler->right->parent = cycler;
-            dupPokemonDate(id, cycler->right->data);
+            dupPokemonData(id, cycler->right);
             return;
         }
         else {
@@ -577,20 +599,25 @@ void insertPokemonNode(PokemonNode *root, int id) {
             cycler->left->left = NULL;
             cycler->left->right = NULL;
             cycler->left->parent = cycler;
-            dupPokemonDate(id, cycler->left->data);
+            dupPokemonData(id, cycler->left);
             return;
         }
     }
 }
 
-// free pokemon
-void freePokemon(OwnerNode *owner) {
+
+// ---------------------------- 
+// case 3: Free Pokemon
+// ----------------------------
+void freePokemon(OwnerNode *owner, int id) {
     if (!owner->pokedexRoot) {
         printf("No Pokemon to release.\n");
         return;
     }
-
-    int chosenPokemonId = readIntSafe("Enter Pokemon ID to release: ");
+    int chosenPokemonId = id;
+    if (chosenPokemonId == 0) {
+        chosenPokemonId = readIntSafe("Enter Pokemon ID to release: ");
+    }
     // find it
     PokemonNode *target = searchPokemonBFS(owner->pokedexRoot, chosenPokemonId);
     if (!target) { // if not exist
@@ -612,6 +639,9 @@ void freePokemon(OwnerNode *owner) {
         oneChildRemove(owner, target);
         target = NULL;
     }
+    // print according to caller (id != 0 when called from evolution)
+    printf("Removing %s (ID %d).\n", pokedex[chosenPokemonId].name, chosenPokemonId);
+
 }
 
 PokemonNode* findClosestId(PokemonNode *start) {
@@ -678,6 +708,79 @@ void twoChildrenRemove(OwnerNode *owner, PokemonNode *target) {
     else {
         oneChildRemove(owner, replacement);
         replacement = NULL;
+    }
+}
+
+// ---------------------------- 
+// case 4: Pokemon Fight
+// ----------------------------
+
+void pokemonFight(OwnerNode *owner) {
+    if (!owner->pokedexRoot) {
+        printf("Pokedex is empty.\n");
+        return;
+    }
+
+    int id1 = readIntSafe("Enter ID of the first Pokemon: ");
+    int id2 = readIntSafe("Enter ID of the second Pokemon: ");
+    if (searchPokemonBFS(owner->pokedexRoot, id1) && searchPokemonBFS(owner->pokedexRoot, id2)) { // both exists
+        float score1 = (pokedex[id1].attack * 1.5 + pokedex[id1].hp * 1.2);
+        float score2 = (pokedex[id2].attack * 1.5 + pokedex[id2].hp * 1.2);
+
+        printf("Pokemon 1: %s (Score = %.2f)\n", pokedex[id1].name, score1);
+        printf("Pokemon 2: %s (Score = %.2f)\n", pokedex[id2].name, score2);
+
+        if (score1 < score2) {
+            printf("%s wins!\n", pokedex[id2].name);
+        }
+        else if (score2 < score1) {
+            printf("%s wins!\n", pokedex[id1].name);
+        }
+        else {
+            printf("It’s a tie!\n");
+        }
+    }
+    else {
+        printf("One or both Pokemon IDs not found.\n");
+    }
+}
+
+// ---------------------------- 
+// case 5: Evolve Pokemon
+// ----------------------------
+
+void evolvePokemon(OwnerNode *owner) {
+    // check if pokedex is empty
+    if (!owner->pokedexRoot) {
+        printf("Cannot evolve. Pokedex empty.\n");
+        return;
+    }
+    int oldID = readIntSafe("Enter ID of Pokemon to evolve: ");
+    // check if id in pokedex
+    PokemonNode *targetPokemon = searchPokemonBFS(owner->pokedexRoot, oldID);
+    if (!targetPokemon) {
+        printf("No Pokemon with ID %d found.\n", oldID);
+        return;
+    }
+    // check if has an evolution
+    if (!pokedex[oldID].CAN_EVOLVE) { // if not
+        printf("%s (ID %d) cannot evolve.\n", pokedex[oldID].name, oldID);
+        return;
+    }
+
+    // check if evolved version exists
+    int evolvedID = oldID+1;
+    if (searchPokemonBFS(owner->pokedexRoot, evolvedID)) { // if it does
+        printf("Evolution ID %d (%s) already in the Pokedex. Releasing %s (ID %d).\n", evolvedID,
+        pokedex[evolvedID].name, pokedex[oldID].name, oldID);
+        freePokemon(owner, oldID);
+    }
+    else { // if it doesn't
+        // free old data
+        free(targetPokemon->data->name);
+        free(targetPokemon->data);
+        // assign the new data
+        dupPokemonData(evolvedID, targetPokemon);
     }
 }
 
@@ -793,11 +896,7 @@ void openPokedexMenu(void) {
     }
 
     OwnerNode *newOwner = ownerHead->prev;
-    newOwner->ownerName = strdup(name);
-    if (!newOwner->ownerName) {
-        printf("strdup malloc failed\n");
-        exit(1);
-    }
+    newOwner->ownerName = myStrdup(name);
     
     // create the root pokemon node
     newOwner->pokedexRoot = (PokemonNode*) malloc(sizeof(PokemonNode));
@@ -815,7 +914,7 @@ void openPokedexMenu(void) {
         printf("malloc failed\n");
         exit(1);
     }
-    dupPokemonDate(starterChoiceId, newOwner->pokedexRoot->data);
+    dupPokemonData(starterChoiceId, newOwner->pokedexRoot);
 
 
     // when done
@@ -823,17 +922,20 @@ void openPokedexMenu(void) {
     return;
 }
 
-void dupPokemonDate(int pokemonId, PokemonData *target) {
-    target->id = pokemonId;
-    target->name = strdup(pokedex[pokemonId].name);
-    if(!target->name) {
-        printf("pokemon dup - strdup failed\n");
-        exit(1);
+void dupPokemonData(int pokemonId, PokemonNode *targetNode) {
+    if (!targetNode->data) {
+        targetNode->data = (PokemonData*) malloc(sizeof(PokemonData));
+        if (!targetNode->data) {
+            printf("malloc failed\n");
+            exit(1);
+        }
     }
-    target->TYPE = pokedex[pokemonId].TYPE; // not sure if this will work!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    target->hp = pokedex[pokemonId].hp;
-    target->attack = pokedex[pokemonId].attack;
-    target->CAN_EVOLVE = pokedex[pokemonId].CAN_EVOLVE; // this too!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    targetNode->data->id = pokemonId;
+    targetNode->data->name = myStrdup(pokedex[pokemonId].name);
+    targetNode->data->TYPE = pokedex[pokemonId].TYPE; // not sure if this will work!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    targetNode->data->hp = pokedex[pokemonId].hp;
+    targetNode->data->attack = pokedex[pokemonId].attack;
+    targetNode->data->CAN_EVOLVE = pokedex[pokemonId].CAN_EVOLVE; // this too!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 }
 
 int isNameTaken(char *name) {
@@ -851,4 +953,57 @@ int isNameTaken(char *name) {
     } while (currentOwner != ownerHead);
 
     return 0;
+}
+
+
+// ---------------------------- 
+// Delete Pokedex
+// ---------------------------- 
+void deletePokedex(void) {
+    if (ownerHead == NULL) {
+        printf("No existing Pokedexes to delete.\n");
+        return;
+    }
+    printf("=== Delete a Pokedex ===\n");
+    printOwnersOnce('R', menuPrint);
+    int chosenPokedexID = readIntSafe("Choose a Pokedex to delete by number: ");
+    OwnerNode *target = ownerHead;
+    for (int i = 1; i < chosenPokedexID; i++) { // gets the owner node by index
+        target = target->next;
+    }
+    printf("Deleting %s's entire Pokedex...\n", target->ownerName);
+
+    // check if the only Owner
+    if (target->next = target) {
+        ownerHead = NULL;
+    }
+    else {
+        target->prev->next = target->next;
+        target->next->prev = target->prev;
+    }
+    freeOwnerNode(target);
+    target = NULL;
+    printf("Pokedex deleted.\n");
+}
+
+void freeOwnerNode(OwnerNode *target) {
+    postOrderGeneric(target->pokedexRoot, freePokemonNode);
+    free(target);
+}
+
+void printOwnersOnce(char dir, PrintOwnerFunc customPrint) {
+    OwnerNode *cur = (dir == 'R') ? ownerHead->next : ownerHead->prev;
+    
+    int i = 1;
+    customPrint(ownerHead, i);
+    while (cur != ownerHead) {
+        i++;
+        customPrint(cur, i);
+        cur = (dir == 'R') ? cur->next : cur->prev;
+    }
+    cur = NULL;
+}
+
+void menuPrint(OwnerNode *Node, int i) {
+    printf("%d. %s\n", i, Node->ownerName);
 }

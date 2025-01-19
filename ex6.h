@@ -359,9 +359,10 @@ void addPokemon(OwnerNode *owner);
 /**
  * @brief Prompt for ID, remove that Pokemon from BST by ID.
  * @param owner pointer to the Owner
+ * @param id you can manually choose id or enter 0 and will use user input
  * Why we made it: Another user function for releasing a Pokemon.
  */
-void freePokemon(OwnerNode *owner);
+void freePokemon(OwnerNode *owner, int id);
 
 /* ------------------------------------------------------------
    7) Display Menu for a Pokedex
@@ -640,9 +641,9 @@ static const PokemonData pokedex[] = {
 /**
  * @brief copy all of a pokemon's data by id
  * @param pokemonId the ID of the pokemon to be copied
- * @param target pointer to the targeted PokemonDate node  
+ * @param targetNode pointer to the targeted PokemonNode  
  */
-void dupPokemonDate(int pokemonId, PokemonData *target);
+void dupPokemonData(int pokemonId, PokemonNode *targetNode);
 
 /**
  * @brief checks if a name is already in use.
@@ -692,5 +693,32 @@ void oneChildRemove(OwnerNode *owner, PokemonNode *target);
  * @param target pokemon node to be removed
  */
 void twoChildrenRemove(OwnerNode *owner, PokemonNode *target);
+
+/**
+ * @brief A bubble sort algorithm for a linked array
+ * @param na pointer to the NodeArray
+ */
+void bubbleSortArr(NodeArray *na);
+
+/**
+ * @brief Free an owner's Node (including it's data)
+ * @param target tageted node...
+ */
+void freeOwnerNode(OwnerNode *target);
+
+
+typedef void (*PrintOwnerFunc)(OwnerNode *, int);
+
+/**
+ * @brief Use your custom print function on all the Owners in a direction of your choice!
+ * @param dir the wanted direction
+ * @param customPrint your custom print function
+ */
+void printOwnersOnce(char dir, PrintOwnerFunc customPrint);
+
+// -----------------------------------
+// Custom Printing Functions:
+// -----------------------------------
+void menuPrint(OwnerNode *Node, int i);
 
 #endif // EX6_H
