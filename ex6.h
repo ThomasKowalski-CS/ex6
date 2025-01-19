@@ -672,5 +672,25 @@ int checkBSTLength(PokemonNode *root);
  */
 PokemonNode* findClosestId(PokemonNode *start);
 
+/**
+ * @brief handles the removal of a childless node from the BST
+ * @param owner pointer to the owner node
+ * @param target pokemon node to be removed
+ */
+void noChildrenRemove(OwnerNode *owner, PokemonNode *target);
+
+/**
+ * @brief handles the removal of a node with one child from the BST
+ * @param owner pointer to the owner node
+ * @param target pokemon node to be removed
+ */
+void oneChildRemove(OwnerNode *owner, PokemonNode *target);
+
+/**
+ * @brief handles the removal of two children node from the BST
+ * @param owner pointer to the owner node
+ * @param target pokemon node to be removed
+ */
+void twoChildrenRemove(OwnerNode *owner, PokemonNode *target);
 
 #endif // EX6_H

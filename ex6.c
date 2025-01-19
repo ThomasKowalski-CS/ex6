@@ -598,64 +598,20 @@ void freePokemon(OwnerNode *owner) {
         return;
     }
     // else 
-    int isRoot = target->parent == NULL;
-    // if no children just delete self and point to NULL
+    // if no children
     if (target->left == NULL && target->right == NULL) {
-        if (!isRoot) {
-            if (target->parent->left == target) {
-                target->parent->left = NULL;
-            }
-            else {
-                target->parent->right = NULL;
-            }
-        }
-        freePokemonNode(target);
+        oneChildRemove(owner, target);
         target = NULL;
         return;
     }
     else if (target->left != NULL && target->right != NULL) { // if have 2 children
-        PokemonNode *replacment = findClosestId(target->right);
-            // just replace
-        if (replacment->right == NULL) { // child is not a parent
-            replacment->parent->left = NULL;
-        }
-        else { // replace and include child
-            replacment->parent->left = replacment->right;
-            replacment->right->parent = replacment->parent;
-        }
-        replacment->left = target->left;
-        replacment->right = target->right;
-        replacment->parent = target->parent;
-        if (!isRoot) {
-            if (target->parent->left == target) {
-                target->parent->left = replacment;
-            }
-            else {
-                target->parent->right = replacment;
-            }
-        }
-        freePokemonNode(target);
+        twoChildrenRemove(owner, target);
         target = NULL;
     }
     else { // one child
-        if (target->parent->left == target) {
-            target->parent->left = target->right;
-        }
-        else {
-            target->parent->right = target->right;
-        }
-        target->right->parent = target->parent;
-        freePokemonNode(target);
+        oneChildRemove(owner, target);
         target = NULL;
     }
-
-    // if 2 children 
-    // find the closest bigger ID (one right than all left until NULL)
-    // it will have no children or a child to the right (because if left then we wouldve went to it)
-    // replace it with the deleted node (and free the deleted one)
-    // point to it's child
-    
-    // if one child delete self and point to child
 }
 
 PokemonNode* findClosestId(PokemonNode *start) {
@@ -669,6 +625,60 @@ void freePokemonNode(PokemonNode *node) {
     free(node->data->name);
     free(node->data);
     free(node);
+}
+
+void noChildrenRemove(OwnerNode *owner, PokemonNode *target) {
+    if (target->parent == NULL) { // if its the root
+        owner->pokedexRoot = NULL;
+    }
+    else { // else point parent to NULL
+        if (target->parent->left == target) {
+            target->parent->left = NULL;
+        }
+        else {
+            target->parent->right = NULL;
+        }
+    }
+    freePokemonNode(target);
+}
+
+void oneChildRemove(OwnerNode *owner, PokemonNode *target) {
+    PokemonNode *child = (target->left != NULL) ? target->left : target->right;
+    if (target->parent == NULL) { // if it's the root
+        owner->pokedexRoot = child;
+        child->parent = NULL;
+    }
+    else { // point child and parent
+        if (target->parent->left == target) {
+            target->parent->left = child;
+            child->parent = target->parent;
+        }
+        else {
+            target->parent->right = child;
+            child->parent = target->parent;
+        }
+    }
+    freePokemonNode(target);
+}
+
+void twoChildrenRemove(OwnerNode *owner, PokemonNode *target) {
+    // find replacement
+    PokemonNode *replacement = findClosestId(target->right);
+    // switch data
+    PokemonData *tmp = target->data;
+    target->data = replacement->data;
+    replacement->data = tmp;
+    tmp = NULL;
+    
+    // replacement is childless or has one child by definition
+    if (replacement->left == NULL && replacement->right ==NULL) {
+        noChildrenRemove(owner, replacement);
+        replacement = NULL;
+    }
+    else {
+        oneChildRemove(owner, replacement);
+        replacement = NULL;
+    }
 }
 
 // --------------------------------------------------------------

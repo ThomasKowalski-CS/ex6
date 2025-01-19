@@ -1,0 +1,52 @@
+displayBFS(root): root != NULL for sure.
+create queue add root to first slot
+
+loop {
+func front
+add front children at rear
+delete front go to next one
+if next is NULL done
+}
+
+pre-order
+recursivly:
+
+if im null
+return
+
+else
+print me
+return left child
+return right child
+
+alphabetic:
+create an array with the length of all the bst nodes
+add them all
+sort the array
+print one by one
+free all
+
+
+free pokemon:
+malloced things:
+	pokemon's name
+	pokemon data struct
+	pokemon node
+	
+i stopped in the middle like this because i need to figre out how to handle 2 children replacment (code wise)
+need to connect child and parent of replacment but what if the replacment is the one to the right of target?
+dont forget to implement 1 child handle.
+you got this!
+
+no children:
+1. if root delete self and make owner point to NULL
+   if not root make parent point at NULL
+2. delete self
+
+one child:
+1. if root make owner point at child and child point at NULL
+   if not root make parent point at child and child point at parent
+2. delete self
+
+two children:
+1. find replacment, swith pokemondata and apply one child or no children on it
