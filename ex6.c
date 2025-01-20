@@ -894,7 +894,7 @@ void openPokedexMenu(void) {
         return;
     }
     
-    printf("Choose starter:\n1. %s\n2. %s\n3. %s\n", pokedex[STARTER1-1].name, // STARTERS are changable at .h file :)
+    printf("Choose Starter:\n1. %s\n2. %s\n3. %s\n", pokedex[STARTER1-1].name, // STARTERS are changable at .h file :)
     pokedex[STARTER2-1].name, pokedex[STARTER3-1].name);
     int starterChoiceId = readIntSafe("Your choice: ");
     switch (starterChoiceId)
@@ -1013,7 +1013,7 @@ void deletePokedex(void) {
         printf("No existing Pokedexes to delete.\n");
         return;
     }
-    printf("=== Delete a Pokedex ===\n");
+    printf("\n=== Delete a Pokedex ===\n");
     printOwnersOnce('F', menuPrint);
     int chosenPokedexID = readIntSafe("Choose a Pokedex to delete by number: ");
     OwnerNode *target = ownerHead;
