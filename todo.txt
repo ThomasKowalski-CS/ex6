@@ -132,7 +132,13 @@ BUGS:
 6. evolve didn't print anything and crash - V
 6.1 line 56 seg fault - works ok on linux
 6.2 after evolving seg fault when trying to display - works ok on linux
-7. seg fault when trying to choose more than one owner - working on this ! did i cover all pointers when creating a new pokedex?
+7. seg fault when trying to choose more than one owner - working on this ! 
+did i cover all pointers when creating a new pokedex? - yes V
+8. in order isn't correct - V
+9. seg fault on merge 1136 - V
+
+
+
 
 
 

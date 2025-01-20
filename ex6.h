@@ -171,12 +171,12 @@ void freeOwnerNode(OwnerNode *owner);
 
 /**
  * @brief Insert a PokemonNode into BST by ID. Use searchPokemonBFS first.
- * @param root pointer to BST root
+ * @param owner pointer to owner
  * @param id pokemon's id
  * 
  * Why we made it: Standard BST insertion ignoring duplicates.
  */
-void insertPokemonNode(PokemonNode *root, int id);
+void insertPokemonNode(OwnerNode *owner, int id);
 
 /**
  * @brief BFS search for a Pokemon by ID in the BST.
