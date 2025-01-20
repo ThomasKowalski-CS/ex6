@@ -124,14 +124,15 @@ free all:
 
 
 BUGS:
-1. when creating a pokedex and being asked for starter pokemon it says "Invalid input"
-2. can't add new pokemon - all already in the pokedex
-3. buuble sort arr capacity bug
-4. can't add pokemon - didn't NULL the cycle->left->data
-5. relese pokemon - seg fault
-6. evolve didn't print anything and crash
-6.1 line 56 seg fault
-6.2 after evolving seg fault when trying to display
+1. when creating a pokedex and being asked for starter pokemon it says "Invalid input" - V
+2. can't add new pokemon - all already in the pokedex - V
+3. buuble sort arr capacity bug - V
+4. can't add pokemon - didn't NULL the cycle->left->data - V
+5. relese pokemon - seg fault - V
+6. evolve didn't print anything and crash - V
+6.1 line 56 seg fault - works ok on linux
+6.2 after evolving seg fault when trying to display - works ok on linux
+7. seg fault when trying to choose more than one owner - working on this ! did i cover all pointers when creating a new pokedex?
 
 
 

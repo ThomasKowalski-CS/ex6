@@ -876,7 +876,7 @@ void openPokedexMenu(void) {
     printf("Your name: ");
     char *name = getDynamicInput();
     // check for duplicates
-    if (!ownerHead && isNameTaken(name)) { // list isn't empty and name is taken
+    if (ownerHead && isNameTaken(name)) { // list isn't empty and name is taken
         printf("Owner '%s' already exists. Not creating a new Pokedex.\n", name);
         return;
     }
@@ -921,8 +921,10 @@ void openPokedexMenu(void) {
             printf("malloc failed\n");
             exit(1);
         }
-        ownerHead->prev->next = tmp;
         tmp->next = ownerHead;
+        tmp->prev = ownerHead->prev;
+        ownerHead->prev->next = tmp;
+        ownerHead->prev = tmp;
         tmp = NULL;
     }
 
@@ -1006,7 +1008,7 @@ void deletePokedex(void) {
     printf("Deleting %s's entire Pokedex...\n", target->ownerName);
 
     // check if the only Owner
-    if (target->next = target) {
+    if (target->next == target) {
         ownerHead = NULL;
     }
     else {
