@@ -1,3 +1,7 @@
+> [!NOTE]  
+> This was such a fun project! Man, I love Pokémon.
+
+
 # Pokedex Manager 3000
 
 > **"Gotta store 'em all (in a BST)!"** – Some random Oak guy
