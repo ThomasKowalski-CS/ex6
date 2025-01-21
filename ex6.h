@@ -4,7 +4,6 @@
 #define STARTER1 1
 #define STARTER2 4
 #define STARTER3 7
-#define MAX_NAME 21
 #define ASCII_GAP 32
 
 #include <ctype.h>

@@ -507,8 +507,8 @@ PokemonNode *searchPokemonBFS(PokemonNode *root, int id) {
     if (!root) { // if tree is empty
         return NULL;
     }
-    
-    if (root->data->id == id) { // 
+
+    if (root->data->id == id) { // if it's the root don't bother...
         return root;
     }
 
