@@ -136,9 +136,5 @@ BUGS:
 did i cover all pointers when creating a new pokedex? - yes V
 8. in order isn't correct - V
 9. seg fault on merge 1136 - V
-
-
-
-
-
+10. seg fault on merge - V
 

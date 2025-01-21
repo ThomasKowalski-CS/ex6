@@ -504,7 +504,11 @@ void addPokemon(OwnerNode *owner) {
 }
 
 PokemonNode *searchPokemonBFS(PokemonNode *root, int id) {
-    if (root->data->id == id) { 
+    if (!root) { // if tree is empty
+        return NULL;
+    }
+    
+    if (root->data->id == id) { // 
         return root;
     }
 
